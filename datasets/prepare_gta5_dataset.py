@@ -10,7 +10,7 @@ def load_resized_img(path):
 def process_cityscapes(leftImg8bit_dir, output_dir, phase):
     save_phase = 'test' if phase == 'val' else 'train'
     savedir = os.path.join(output_dir, save_phase)
-    os.makedirs(savedir + 'A', exist_ok=True)
+    os.makedirs(savedir + 'B', exist_ok=True)
     print("Directory structure prepared at %s" % output_dir)
 
     photo_expr = os.path.join(leftImg8bit_dir, phase) + "/*/*_leftImg8bit.png"
@@ -21,19 +21,31 @@ def process_cityscapes(leftImg8bit_dir, output_dir, phase):
         photo = load_resized_img(photo_path)
 
         # data for cyclegan where the two images are stored at two distinct directories
-        savepath = os.path.join(savedir + 'A', "%d_A.jpg" % i)
+        savepath = os.path.join(savedir + 'B', "%d_B.jpg" % i)
         photo.save(savepath, format='JPEG', subsampling=0, quality=100)
 
 
 def process_gta5_images(gta5Image_dir, output_dir):
-    pass
+    savedir = os.path.join(output_dir, 'train')
+    os.makedirs(savedir + 'A', exist_ok=True)
+    print("Directory structure prepared at %s" % output_dir)
+
+    gta5_expr = os.path.join(gta5Image_dir, '') + "/*/*.png"
+    gta5_paths = glob.glob(gta5_expr)
+    gta5_paths = sorted(gta5_paths)
+
+    for i, gta5_path in enumerate(gta5_paths):
+        figure = load_resized_img(gta5_path)
+
+        savepath = os.path.join(savedir + 'A', "%d_A.jpg" % i)
+        figure.save(savepath, format='JPEG', subsampling=0, quality=100)
 
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--gta5Image_dir', type=str, required=False,
-                        default='./gta5Image',
+                        default='./gta5Images',
                         help='Path to the gta5 image directory.')
     parser.add_argument('--leftImg8bit_dir', type=str, required=False,
                         default='./leftImg8bit',
@@ -44,8 +56,6 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
-    print('Preparing Cityscapes Dataset for val phase')
-    process_cityscapes(opt.leftImg8bit_dir, opt.output_dir, "val")
     print('Preparing Cityscapes Dataset for train phase')
     process_cityscapes(opt.leftImg8bit_dir, opt.output_dir, "train")
 
