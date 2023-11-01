@@ -35,9 +35,11 @@ def process_gta5_images(gta5Image_dir, output_dir):
     gta5_paths = sorted(gta5_paths)
 
     for i, gta5_path in enumerate(gta5_paths):
+        if i % 2 == 1:
+            continue
         figure = load_resized_img(gta5_path)
 
-        savepath = os.path.join(savedir + 'A', "%d_A.jpg" % i)
+        savepath = os.path.join(savedir + 'A', "%d_A.jpg" % (i / 2))
         figure.save(savepath, format='JPEG', subsampling=0, quality=100)
 
 
